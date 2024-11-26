@@ -2,21 +2,25 @@ import 'package:flutter/material.dart';
 
 class ConfirmationScreen extends StatelessWidget {
   final String destination;
-  final String category;
-  final String option;
   final Map<String, String> reservationDetails;
+  final String category;  // Added 'category' as a named parameter
 
-  // Correct constructor
+  // Correct constructor to include 'category' as a named parameter
   const ConfirmationScreen({
     required this.destination,
-    required this.category,
-    required this.option,
-    required this.reservationDetails,  // Correctly pass reservationDetails here
+    required this.reservationDetails,
+    required this.category,  // Now passing 'category'
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Extract reservation details from the passed map
+    String restaurantOrHotel = reservationDetails['restaurant'] ?? 'Unknown Name';
+    String date = reservationDetails['date'] ?? 'Not Selected';
+    String time = reservationDetails['time'] ?? 'Not Selected';
+    String numberOfPeople = reservationDetails['people'] ?? '1';
+
     return Scaffold(
       appBar: AppBar(title: Text('Confirmation')),
       body: Padding(
@@ -24,7 +28,7 @@ class ConfirmationScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Fade-in animation for confirmation text
+            // Existing fade-in animation for confirmation text
             AnimatedOpacity(
               opacity: 1.0,
               duration: Duration(milliseconds: 500),
@@ -32,7 +36,7 @@ class ConfirmationScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Animated fade-in text for destination, category, and option
+            // Animated fade-in text for destination, category, and other details
             AnimatedOpacity(
               opacity: 1.0,
               duration: Duration(milliseconds: 800),
@@ -40,15 +44,23 @@ class ConfirmationScreen extends StatelessWidget {
                 children: [
                   Text('Destination: $destination', style: TextStyle(fontSize: 18)),
                   SizedBox(height: 10),
-                  Text('Category: $category', style: TextStyle(fontSize: 18)),
+                  Text('Category: $category', style: TextStyle(fontSize: 18)), // Display "Hotel" or "Restaurant"
                   SizedBox(height: 10),
-                  Text('Option: $option', style: TextStyle(fontSize: 18)),
+                  Text('Name: $restaurantOrHotel', style: TextStyle(fontSize: 18)), // Display name of hotel or restaurant
+                  SizedBox(height: 20),
+
+                  // Display reservation details (date, time, number of people)
+                  Text('Date: $date', style: TextStyle(fontSize: 18)),
+                  SizedBox(height: 10),
+                  Text('Time: $time', style: TextStyle(fontSize: 18)),
+                  SizedBox(height: 10),
+                  Text('Number of People: $numberOfPeople', style: TextStyle(fontSize: 18)),
                 ],
               ),
             ),
             SizedBox(height: 30),
 
-            // Confirm Selection Button with scaling effect
+            // Existing Confirm Selection Button with scaling effect
             GestureDetector(
               onTapDown: (_) {
                 // Trigger scale effect on button press
@@ -79,7 +91,7 @@ class ConfirmationScreen extends StatelessWidget {
                             onPressed: () {
                               // Navigate back to the previous screen (or home screen)
                               Navigator.pop(context); // Close the dialog
-                              Navigator.pop(context); // Return to the previous screen (could be home screen)
+                              Navigator.pop(context); // Return to the previous screen
                             },
                             child: Text('OK'),
                           ),
@@ -97,7 +109,7 @@ class ConfirmationScreen extends StatelessWidget {
     );
   }
 
-  // Method to scale button on press for feedback
+  // Existing method to scale button on press for feedback
   void _scaleButton(BuildContext context, bool isPressed) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isPressed ? 'Button Pressed' : 'Button Released')));
   }
