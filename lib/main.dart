@@ -17,7 +17,15 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => LoginScreen(),
         '/signup': (context) => SignUpScreen(),
-        '/dashboard': (context) => DashboardScreen(username: '',), // passing username parameter
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/dashboard') {
+          final args = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => DashboardScreen(username: args),
+          );
+        }
+        return null; // Default route handling
       },
     );
   }

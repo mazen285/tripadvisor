@@ -45,22 +45,24 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoading = false;
         });
 
-        // Navigate to the Dashboard screen
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                DashboardScreen(username: email!),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0);
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              var offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
-        );
+        // Navigate to the Dashboard screen with email passed as username
+        if (email != null) {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  DashboardScreen(username: email!),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.easeInOut;
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+                return SlideTransition(position: offsetAnimation, child: child);
+              },
+            ),
+          );
+        }
       });
     }
   }
@@ -105,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 20),
 
-              // Password Field with enhanced styling
+              // Password Field with enhanced styling and validation
               AnimatedContainer(
                 duration: Duration(milliseconds: 300),
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -125,6 +127,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
+                    } else if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
                     }
                     return null;
                   },
@@ -185,7 +189,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   foregroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(vertical: 12.0),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-
                 ),
               ),
             ],

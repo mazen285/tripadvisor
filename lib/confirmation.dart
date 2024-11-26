@@ -4,8 +4,16 @@ class ConfirmationScreen extends StatelessWidget {
   final String destination;
   final String category;
   final String option;
+  final Map<String, String> reservationDetails;
 
-  const ConfirmationScreen({required this.destination, required this.category, required this.option});
+  // Correct constructor
+  const ConfirmationScreen({
+    required this.destination,
+    required this.category,
+    required this.option,
+    required this.reservationDetails,  // Correctly pass reservationDetails here
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,13 +58,17 @@ class ConfirmationScreen extends StatelessWidget {
                 // Reset scale effect after button press
                 _scaleButton(context, false);
               },
+              onTapCancel: () {
+                // Reset scale effect if the tap is canceled
+                _scaleButton(context, false);
+              },
               child: AnimatedScale(
                 scale: 1.0,
                 duration: Duration(milliseconds: 100),
                 curve: Curves.easeInOut,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Implement further confirmation logic if needed
+                    // Show confirmation dialog
                     showDialog(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
@@ -65,7 +77,9 @@ class ConfirmationScreen extends StatelessWidget {
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.pop(context);
+                              // Navigate back to the previous screen (or home screen)
+                              Navigator.pop(context); // Close the dialog
+                              Navigator.pop(context); // Return to the previous screen (could be home screen)
                             },
                             child: Text('OK'),
                           ),

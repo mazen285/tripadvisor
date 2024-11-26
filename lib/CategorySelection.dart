@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'confirmation.dart';
+import 'Restaurant Reservation Page.dart';
+import 'confirmation.dart'; // Import ConfirmationScreen
 
 class CategorySelectionScreen extends StatefulWidget {
   final String destination;
@@ -16,6 +17,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   String? selectedCategory;
   List<dynamic> places = [];  // List to hold places (hotels or restaurants)
   bool isLoading = false;
+  bool hasError = false;
 
   @override
   void initState() {
@@ -28,6 +30,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   Future<void> _fetchPlaces() async {
     setState(() {
       isLoading = true;
+      hasError = false;
     });
 
     final String category = selectedCategory == 'Hotel' ? 'hotel' : 'restaurant';
@@ -49,12 +52,14 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
       } else {
         setState(() {
           isLoading = false;
+          hasError = true;
         });
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load places')));
       }
     } catch (e) {
       setState(() {
         isLoading = false;
+        hasError = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
@@ -95,7 +100,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
               offset: Offset(0, 0),
               duration: Duration(milliseconds: 500),
               child: Text(
-                'Destination: ${widget.destination}',
+                'Destination: ${widget.destination}',  // The destination name is displayed here
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ),
@@ -129,38 +134,50 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
             // Show loading spinner when fetching data
             if (isLoading)
               Center(child: CircularProgressIndicator())
-            else if (places.isEmpty)
-              Center(child: Text("No places found. Try a different search.", style: TextStyle(color: Colors.white)))
-            else
-              Expanded(
-                child: ListView.builder(
-                  itemCount: places.length,
-                  itemBuilder: (context, index) {
-                    final place = places[index];
-                    // Check if 'address' exists and show a fallback if not
-                    final address = place['address'] != null ? place['address'] : 'Address not available';
-                    final name = place['display_name'] ?? 'No name';
-
-                    return ListTile(
-                      title: Text(name),
-                      subtitle: Text(address),  // Displaying the address or fallback message
-                      onTap: () {
-                        // Handle the selection of a place
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ConfirmationScreen(
-                              destination: widget.destination,
-                              category: selectedCategory!,
-                              option: name,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
+            else if (hasError)
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Error fetching data. Please try again.", style: TextStyle(color: Colors.white)),
+                    SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: _fetchPlaces,
+                      child: Text('Retry'),
+                    ),
+                  ],
                 ),
-              ),
+              )
+            else if (places.isEmpty)
+                Center(child: Text("No places found. Try a different search.", style: TextStyle(color: Colors.white)))
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: places.length,
+                    itemBuilder: (context, index) {
+                      final place = places[index];
+                      final address = place['address'] != null ? place['address'] : 'Address not available';
+                      final name = place['display_name'] ?? 'No name';
+
+                      return ListTile(
+                        title: Text(name),
+                        subtitle: Text(address),
+                        onTap: () {
+                          // Navigate to ReservationScreen with place details
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReservationScreen(
+                                destination: widget.destination,
+                                restaurantName: '', // Adjust if necessary
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
 
             // Animated button with scale effect
             GestureDetector(
@@ -182,14 +199,12 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                   ),
                   onPressed: () {
                     if (places.isNotEmpty) {
-                      // Show a transition animation and navigate to the confirmation screen
+                      // Navigate to ReservationScreen directly when Confirm Category is pressed
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ConfirmationScreen(
-                            destination: widget.destination,
-                            category: selectedCategory!,
-                            option: places.first['display_name'] ?? 'Example Option',
+                          builder: (context) => ReservationScreen(
+                            destination: widget.destination, restaurantName: '',
                           ),
                         ),
                       );

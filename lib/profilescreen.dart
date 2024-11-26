@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatefulWidget {
-  @override
-  _ProfileScreenState createState() => _ProfileScreenState();
-}
+class ProfileScreen extends StatelessWidget {
+  final Map<String, String> reservationDetails; // The reservation details
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
+  // Constructor to accept reservationDetails
+  const ProfileScreen({
+    Key? key,
+    required this.reservationDetails, // The reservation details
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,37 +17,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Profile Picture with editable option
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage('assets/images/profile.jpg'), // Placeholder image
-            ),
-            TextButton(
-              onPressed: () {
-                // Implement logic to update profile picture
-              },
-              child: Text('Change Profile Picture'),
-            ),
-            SizedBox(height: 20),
-
-            // Name Field
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
+            Text(
+              'Reservation Details:',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-
-            // Email Field
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
+            Text('Restaurant: ${reservationDetails['restaurant'] ?? 'N/A'}'),
+            Text('Date: ${reservationDetails['date'] ?? 'N/A'}'),
+            Text('Time: ${reservationDetails['time'] ?? 'N/A'}'),
+            Text('People: ${reservationDetails['people'] ?? 'N/A'}'),
             SizedBox(height: 20),
 
             // Save Button
             ElevatedButton(
               onPressed: () {
-                // Save logic here, possibly API call
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Profile updated successfully')),
                 );

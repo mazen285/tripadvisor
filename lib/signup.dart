@@ -10,10 +10,10 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController(); // For confirm password
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   double _scale = 1.0;
-  String _passwordStrength = ""; // Password strength tracker
+  String _passwordStrength = "";
 
   void _onTapDown(TapDownDetails details) {
     setState(() {
@@ -170,7 +170,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
-                          // Proceed with sign-up logic
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Account created successfully!')),
                           );
@@ -216,7 +215,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   IconButton(
                     icon: Icon(Icons.facebook, color: Colors.blue),
                     onPressed: () {
-                      // Implement Facebook sign-up logic
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Facebook sign-up not implemented')),
                       );
@@ -225,7 +223,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   IconButton(
                     icon: Icon(Icons.g_mobiledata, color: Colors.red),
                     onPressed: () {
-                      // Implement Google sign-up logic
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Google sign-up not implemented')),
                       );
