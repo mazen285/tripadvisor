@@ -85,8 +85,6 @@ class ConfirmationScreen extends StatelessWidget {
 
   // Method to scale button on press for feedback
   void _scaleButton(BuildContext context, bool isPressed) {
-    // You can use a stateful widget to manage button state if needed.
-    // For now, this effect is just to show a visual feedback.
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isPressed ? 'Button Pressed' : 'Button Released')));
   }
 }

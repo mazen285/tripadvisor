@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tripadvisor/signup.dart';
 import 'dashboard_screen.dart';
+import 'forgotpassword.dart'; // Import ForgotPasswordScreen
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -121,10 +122,13 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 10),
 
-              // Forgot Password Button (Add your functionality here)
+              // Forgot Password Button (Linked to ForgotPasswordScreen)
               TextButton(
                 onPressed: () {
-                  // Implement Forgot Password functionality
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+                  );
                 },
                 child: Text('Forgot Password?'),
               ),
