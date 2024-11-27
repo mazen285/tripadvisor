@@ -149,15 +149,18 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                 ),
               )
             else if (places.isEmpty)
-                Center(child: Text("No places found. Try a different search.", style: TextStyle(color: Colors.white)))
+                Center(child: Text("No places found.", style: TextStyle(color: Colors.white)))
               else
                 Expanded(
                   child: ListView.builder(
                     itemCount: places.length,
                     itemBuilder: (context, index) {
                       final place = places[index];
-                      final address = place['address'] != null ? place['address'] : 'Address not available';
-                      final name = place['display_name'] ?? 'No name';
+                      // Splitting the name from the address
+                      final displayName = place['display_name'] ?? 'No name';
+                      final split = displayName.split(',');
+                      final name = split[0]; // The name before the comma
+                      final address = split.length > 1 ? split.sublist(1).join(', ') : 'Address not available'; // Everything after the comma
 
                       return ListTile(
                         title: Text(name),
@@ -169,7 +172,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                             MaterialPageRoute(
                               builder: (context) => ReservationScreen(
                                 destination: widget.destination,
-                                restaurantName: '', // Adjust if necessary
+                                restaurantName: name, // Pass the actual name of the place
                               ),
                             ),
                           );
