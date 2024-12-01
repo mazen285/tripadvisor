@@ -3,20 +3,19 @@ import 'package:flutter/material.dart';
 class ConfirmationScreen extends StatelessWidget {
   final String destination;
   final Map<String, String> reservationDetails;
-  final String category;  // Added 'category' as a named parameter
+  final String placeName; // Retain 'placeName' for displaying the place name
 
-  // Correct constructor to include 'category' as a named parameter
+  // Constructor excluding 'name' parameter
   const ConfirmationScreen({
     required this.destination,
     required this.reservationDetails,
-    required this.category,  // Now passing 'category'
+    required this.placeName,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // Extract reservation details from the passed map
-    String restaurantOrHotel = reservationDetails['restaurant'] ?? 'Unknown Name';
     String date = reservationDetails['date'] ?? 'Not Selected';
     String time = reservationDetails['time'] ?? 'Not Selected';
     String numberOfPeople = reservationDetails['people'] ?? '1';
@@ -36,7 +35,7 @@ class ConfirmationScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Animated fade-in text for destination, category, and other details
+            // Animated fade-in text for destination, placeName, and other details
             AnimatedOpacity(
               opacity: 1.0,
               duration: Duration(milliseconds: 800),
@@ -44,9 +43,7 @@ class ConfirmationScreen extends StatelessWidget {
                 children: [
                   Text('Destination: $destination', style: TextStyle(fontSize: 18)),
                   SizedBox(height: 10),
-                  Text('Category: $category', style: TextStyle(fontSize: 18)), // Display "Hotel" or "Restaurant"
-                  SizedBox(height: 10),
-                  Text('Name: $restaurantOrHotel', style: TextStyle(fontSize: 18)), // Display name of hotel or restaurant
+                  Text('Place Name: $placeName', style: TextStyle(fontSize: 18)), // Display placeName
                   SizedBox(height: 20),
 
                   // Display reservation details (date, time, number of people)
@@ -60,7 +57,7 @@ class ConfirmationScreen extends StatelessWidget {
             ),
             SizedBox(height: 30),
 
-            // Existing Confirm Selection Button with scaling effect
+            // Confirm Selection Button with scaling effect
             GestureDetector(
               onTapDown: (_) {
                 // Trigger scale effect on button press
@@ -109,8 +106,9 @@ class ConfirmationScreen extends StatelessWidget {
     );
   }
 
-  // Existing method to scale button on press for feedback
+  // Method to scale button on press for feedback
   void _scaleButton(BuildContext context, bool isPressed) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isPressed ? 'Button Pressed' : 'Button Released')));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(isPressed ? 'Button Pressed' : 'Button Released')));
   }
 }

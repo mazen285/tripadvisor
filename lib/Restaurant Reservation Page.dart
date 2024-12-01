@@ -3,7 +3,7 @@ import 'Payment Screen.dart';
 
 class ReservationScreen extends StatefulWidget {
   final String restaurantName;
-  final String destination;  // Include the destination parameter
+  final String destination; // Include the destination parameter
 
   const ReservationScreen({
     Key? key,
@@ -28,10 +28,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
       firstDate: DateTime(2024),
       lastDate: DateTime(2025),
     );
-    if (picked != null && picked != selectedDate)
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
       });
+    }
   }
 
   // Function to select the time
@@ -40,10 +41,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
-    if (picked != null && picked != selectedTime)
+    if (picked != null && picked != selectedTime) {
       setState(() {
         selectedTime = picked;
       });
+    }
   }
 
   @override
@@ -115,8 +117,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 if (selectedDate != null && selectedTime != null) {
                   // Convert DateTime and TimeOfDay to String for reservationDetails
                   final reservationDetails = {
-                    'restaurant': widget.restaurantName,
-                    'destination': widget.destination,  // Pass destination to reservationDetails
+                    'placeName': widget.restaurantName, // Changed 'restaurant' to 'placeName'
+                    'destination': widget.destination,
                     'date': selectedDate!.toLocal().toString().split(' ')[0], // Convert DateTime to String
                     'time': selectedTime!.format(context), // TimeOfDay to String
                     'people': numberOfPeople.toString(),

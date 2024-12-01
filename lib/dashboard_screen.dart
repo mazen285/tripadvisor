@@ -145,11 +145,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             // List of reservations or other dynamic content
             _buildReservationList(),
-
-            SizedBox(height: 20),
-
-            // Search bar for destinations
-            _buildSearchBar(),
           ],
         ),
       ),
@@ -279,24 +274,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           },
         ),
       ],
-    );
-  }
-
-  // Search Bar Widget
-  Widget _buildSearchBar() {
-    return TextField(
-      decoration: InputDecoration(
-        labelText: 'Search for Destinations',
-        prefixIcon: Icon(Icons.search),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-      ),
-      onChanged: (value) {
-        // Handle search query input
-      },
     );
   }
 }
