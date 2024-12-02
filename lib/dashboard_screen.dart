@@ -2,59 +2,6 @@ import 'package:flutter/material.dart';
 import 'ProfileScreen.dart'; // Ensure this import is correct
 import 'CategorySelection.dart'; // Ensure this import is correct
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'TripAdvisor App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.light,
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.blueAccent,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            elevation: 10,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-          ),
-        ),
-        textTheme: TextTheme(
-          bodyMedium: TextStyle(color: Colors.black),
-        ),
-      ),
-      darkTheme: ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.dark,
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.blueGrey,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blueGrey,
-            elevation: 10,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-          ),
-        ),
-        textTheme: TextTheme(
-          bodyMedium: TextStyle(color: Colors.white),
-        ),
-      ),
-      themeMode: ThemeMode.system, // Automatically switches between light and dark based on system settings
-      home: DashboardScreen(username: 'User123'), // Replace with dynamic username
-    );
-  }
-}
-
 class DashboardScreen extends StatefulWidget {
   final String username; // Accepting username parameter
 
@@ -66,7 +13,29 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   String? selectedDestination;
-  final List<String> destinations = ['Paris, France', 'Tokyo, Japan', 'New York, USA', 'London, UK'];
+  final List<String> destinations = [
+    'Paris, France',
+    'Tokyo, Japan',
+    'New York, USA',
+    'London, UK',
+    'Sydney, Australia',
+    'Rome, Italy',
+    'Barcelona, Spain',
+    'Cape Town, South Africa',
+    'Dubai, UAE',
+    'Rio de Janeiro, Brazil',
+    'Bangkok, Thailand',
+    'Amsterdam, Netherlands',
+    'Seoul, South Korea',
+    'Dubai, UAE',
+    'Buenos Aires, Argentina',
+    'Cairo, Egypt',
+    'Istanbul, Turkey',
+    'Athens, Greece',
+    'San Francisco, USA',
+    'Moscow, Russia'
+  ];
+
   double _scale = 1.0;
 
   // Method to scale button on press for feedback
@@ -99,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             );
           },
-          child: Icon(Icons.account_circle, size: 30),  // User icon
+          child: Icon(Icons.account_circle, size: 30), // User icon
         ),
       ),
       body: Container(
@@ -138,8 +107,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             SizedBox(height: 20),
 
-            // Cards with destination info (Example)
-            _buildDestinationCards(),
+            // Cards with destination info
+
 
             SizedBox(height: 20),
 
@@ -228,27 +197,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // Card Widget for Destination Info
-  Widget _buildDestinationCards() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: ListTile(
-        leading: Icon(Icons.location_on, color: Colors.blue),
-        title: Text('Paris, France'),
-        subtitle: Text('Explore the city of love and lights!'),
-        trailing: Icon(Icons.arrow_forward),
-        onTap: () {
-          // Handle card tap (e.g., navigate to detailed view)
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Paris destination selected!')),
-          );
-        },
-      ),
-    );
-  }
 
   // ListTile Widget for Reservations
   Widget _buildReservationList() {
