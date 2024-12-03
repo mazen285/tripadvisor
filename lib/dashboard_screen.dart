@@ -81,38 +81,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome message with username
-            AnimatedOpacity(
-              opacity: 1.0,
-              duration: Duration(milliseconds: 700),
-              child: Text(
-                'Welcome, ${widget.username}!', // Displaying username
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            // Destination Dropdown
+            _buildDestinationDropdown(),
+            SizedBox(height: 20),
+
+            // Confirm Destination Button, separate from the dropdown
+            _buildConfirmButton(),
+
             SizedBox(height: 20),
 
             // Displaying reservation details passed from ConfirmationScreen
             Text('Reservation Details:', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
 
-            // Replace static widgets with the dynamic reservation list
+            // Dynamic reservation list
             _buildReservationList(destination, placeName, date, time, people),
 
             SizedBox(height: 30),
-
-            // Destination Selection UI
-            _buildDestinationDropdown(),
-
-            SizedBox(height: 30),
-
-            // Confirm Destination Button
-            _buildConfirmButton(),
-
-            SizedBox(height: 20),
 
             // Cards with destination info
             SizedBox(height: 20),
@@ -121,54 +106,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Floating action button logic (e.g., add new reservation)
+          // Simulating the logout process, you can replace this with actual logout functionality
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Add New Reservation!')),
+            SnackBar(content: Text('Logging out...')),
           );
+
+          // Here you can navigate to a login screen or clear session data if needed.
+          // Example: Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
         },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.blueAccent,
+        child: Icon(Icons.exit_to_app), // Logout icon
+        backgroundColor: Colors.redAccent,
+        // You can change this color
       ),
     );
   }
 
-  // ListTile Widget for Reservations
-  Widget _buildReservationList(String destination, String placeName, String date, String time, String people) {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        ListTile(
-          leading: Icon(Icons.restaurant, color: Colors.blue),
-          title: Text('Restaurant Reservation'),
-          subtitle: Text('Pending: $time, $people people'),
-          trailing: Icon(Icons.timer, color: Colors.orange),
-          onTap: () {
-            // Handle reservation item tap (could navigate to details screen or show more info)
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.location_on, color: Colors.blue),
-          title: Text('Destination: $destination'),
-          subtitle: Text('Place: $placeName'),
-          trailing: Icon(Icons.info, color: Colors.blue),
-          onTap: () {
-            // Handle destination item tap
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.calendar_today, color: Colors.blue),
-          title: Text('Date: $date'),
-          subtitle: Text('Time: $time'),
-          trailing: Icon(Icons.access_time, color: Colors.blue),
-          onTap: () {
-            // Handle date/time item tap
-          },
-        ),
-      ],
-    );
-  }
-
-  // Destination Dropdown with icons and hint
+  // Destination Dropdown with icons and hint at the top of the screen
   Widget _buildDestinationDropdown() {
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
@@ -204,7 +157,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // Confirm Button with scaling effect
+  // Confirm Button with scaling effect placed separately
   Widget _buildConfirmButton() {
     return GestureDetector(
       onTapDown: _onTapDown,
@@ -231,6 +184,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
           },
           child: Text('Confirm Destination'),
         ),
+      ),
+    );
+  }
+
+  // ListTile Widget for Reservations
+  Widget _buildReservationList(String destination, String placeName, String date, String time, String people) {
+    return Expanded(
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(
+            leading: Icon(Icons.restaurant, color: Colors.blue),
+            title: Text('Restaurant Reservation'),
+            subtitle: Text('Pending: $time, $people people'),
+            trailing: Icon(Icons.timer, color: Colors.orange),
+            onTap: () {
+              // Handle reservation item tap (could navigate to details screen or show more info)
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.location_on, color: Colors.blue),
+            title: Text('Destination: $destination'),
+            subtitle: Text('Place: $placeName'),
+            trailing: Icon(Icons.info, color: Colors.blue),
+            onTap: () {
+              // Handle destination item tap
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.calendar_today, color: Colors.blue),
+            title: Text('Date: $date'),
+            subtitle: Text('Time: $time'),
+            trailing: Icon(Icons.access_time, color: Colors.blue),
+            onTap: () {
+              // Handle date/time item tap
+            },
+          ),
+        ],
       ),
     );
   }
