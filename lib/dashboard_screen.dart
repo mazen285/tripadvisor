@@ -4,8 +4,13 @@ import 'CategorySelection.dart'; // Ensure this import is correct
 
 class DashboardScreen extends StatefulWidget {
   final String username; // Accepting username parameter
+  final Map<String, String> reservationDetails; // Accepting reservation details
 
-  const DashboardScreen({Key? key, required this.username}) : super(key: key); // Passing the username in the constructor
+  const DashboardScreen({
+    Key? key,
+    required this.username,
+    required this.reservationDetails,
+  }) : super(key: key); // Passing the username and reservation details in the constructor
 
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -14,26 +19,11 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   String? selectedDestination;
   final List<String> destinations = [
-    'Paris, France',
-    'Tokyo, Japan',
-    'New York, USA',
-    'London, UK',
-    'Sydney, Australia',
-    'Rome, Italy',
-    'Barcelona, Spain',
-    'Cape Town, South Africa',
-    'Dubai, UAE',
-    'Rio de Janeiro, Brazil',
-    'Bangkok, Thailand',
-    'Amsterdam, Netherlands',
-    'Seoul, South Korea',
-    'Dubai, UAE',
-    'Buenos Aires, Argentina',
-    'Cairo, Egypt',
-    'Istanbul, Turkey',
-    'Athens, Greece',
-    'San Francisco, USA',
-    'Moscow, Russia'
+    'Paris, France', 'Tokyo, Japan', 'New York, USA', 'London, UK',
+    'Sydney, Australia', 'Rome, Italy', 'Barcelona, Spain', 'Cape Town, South Africa',
+    'Dubai, UAE', 'Rio de Janeiro, Brazil', 'Bangkok, Thailand', 'Amsterdam, Netherlands',
+    'Seoul, South Korea', 'Dubai, UAE', 'Buenos Aires, Argentina', 'Cairo, Egypt',
+    'Istanbul, Turkey', 'Athens, Greece', 'San Francisco, USA', 'Moscow, Russia'
   ];
 
   double _scale = 1.0;
@@ -53,6 +43,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Prepare the reservation details from passed map
+    final reservation = widget.reservationDetails;
+    final destination = reservation['destination'] ?? 'Not Available';
+    final placeName = reservation['placeName'] ?? 'Not Available';
+    final date = reservation['date'] ?? 'Not Available';
+    final time = reservation['time'] ?? 'Not Available';
+    final people = reservation['people'] ?? 'Not Available';
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
@@ -97,6 +95,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             SizedBox(height: 20),
 
+            // Displaying reservation details passed from ConfirmationScreen
+            Text('Reservation Details:', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            SizedBox(height: 10),
+
+            // Replace static widgets with the dynamic reservation list
+            _buildReservationList(destination, placeName, date, time, people),
+
+            SizedBox(height: 30),
+
             // Destination Selection UI
             _buildDestinationDropdown(),
 
@@ -108,12 +115,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             SizedBox(height: 20),
 
             // Cards with destination info
-
-
             SizedBox(height: 20),
-
-            // List of reservations or other dynamic content
-            _buildReservationList(),
           ],
         ),
       ),
@@ -127,6 +129,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Icon(Icons.add),
         backgroundColor: Colors.blueAccent,
       ),
+    );
+  }
+
+  // ListTile Widget for Reservations
+  Widget _buildReservationList(String destination, String placeName, String date, String time, String people) {
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        ListTile(
+          leading: Icon(Icons.restaurant, color: Colors.blue),
+          title: Text('Restaurant Reservation'),
+          subtitle: Text('Pending: $time, $people people'),
+          trailing: Icon(Icons.timer, color: Colors.orange),
+          onTap: () {
+            // Handle reservation item tap (could navigate to details screen or show more info)
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.location_on, color: Colors.blue),
+          title: Text('Destination: $destination'),
+          subtitle: Text('Place: $placeName'),
+          trailing: Icon(Icons.info, color: Colors.blue),
+          onTap: () {
+            // Handle destination item tap
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.calendar_today, color: Colors.blue),
+          title: Text('Date: $date'),
+          subtitle: Text('Time: $time'),
+          trailing: Icon(Icons.access_time, color: Colors.blue),
+          onTap: () {
+            // Handle date/time item tap
+          },
+        ),
+      ],
     );
   }
 
@@ -194,34 +232,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Text('Confirm Destination'),
         ),
       ),
-    );
-  }
-
-
-  // ListTile Widget for Reservations
-  Widget _buildReservationList() {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        ListTile(
-          leading: Icon(Icons.restaurant, color: Colors.blue),
-          title: Text('Restaurant Reservation'),
-          subtitle: Text('Confirmed: 5:00 PM, 2 people'),
-          trailing: Icon(Icons.check_circle, color: Colors.green),
-          onTap: () {
-            // Handle reservation item tap
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.restaurant, color: Colors.blue),
-          title: Text('Restaurant Reservation'),
-          subtitle: Text('Pending: 7:00 PM, 4 people'),
-          trailing: Icon(Icons.timer, color: Colors.orange),
-          onTap: () {
-            // Handle reservation item tap
-          },
-        ),
-      ],
     );
   }
 }

@@ -156,7 +156,18 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                                 Navigator.pop(context); // Close the dialog
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const DashboardScreen(username: '',)), // Navigate to DashboardScreen
+                                  MaterialPageRoute(
+                                    builder: (context) => DashboardScreen(
+                                      username: widget.reservationDetails['user'] ?? 'Unknown',
+                                      reservationDetails: {
+                                        'destination': widget.destination,
+                                        'placeName': widget.placeName,
+                                        'date': widget.reservationDetails['date'] ?? 'Not Selected',
+                                        'time': widget.reservationDetails['time'] ?? 'Not Selected',
+                                        'people': widget.reservationDetails['people'] ?? '1',
+                                      },
+                                    ),
+                                  ), // Navigate to DashboardScreen
                                 );
                               },
                               child: Text('OK'),

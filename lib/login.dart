@@ -47,11 +47,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Navigate to the Dashboard screen with email passed as username
         if (email != null) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
-                  DashboardScreen(username: email!),
+                  DashboardScreen(username: email!, reservationDetails: {}), // Passing empty reservationDetails for now
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 const begin = Offset(1.0, 0.0);
                 const end = Offset.zero;
