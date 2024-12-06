@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication
 import 'forgotpassword.dart';
 import 'login.dart';
 
@@ -14,6 +15,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   double _scale = 1.0;
   String _passwordStrength = "";
+  bool _isLoading = false; // Loading state for Firebase integration
 
   void _onTapDown(TapDownDetails details) {
     setState(() {
@@ -42,6 +44,53 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
   }
 
+  // Firebase Sign-Up Logic
+  Future<void> _signUpWithFirebase() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      setState(() {
+        _isLoading = true; // Show loading indicator
+      });
+
+      try {
+        // Firebase sign-up logic
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        // Success Message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Account created successfully!')),
+        );
+
+        // Navigate to Login Screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      } on FirebaseAuthException catch (e) {
+        // Handle Firebase exceptions
+        String errorMessage;
+        if (e.code == 'email-already-in-use') {
+          errorMessage = 'The email is already in use.';
+        } else if (e.code == 'invalid-email') {
+          errorMessage = 'The email address is invalid.';
+        } else if (e.code == 'weak-password') {
+          errorMessage = 'The password is too weak.';
+        } else {
+          errorMessage = 'An unexpected error occurred. Please try again.';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false; // Hide loading indicator
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,10 +115,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email),
-                    suffixIcon: Tooltip(
-                      message: 'Enter a valid email address',
-                      child: Icon(Icons.info_outline),
-                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -96,10 +141,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: Icon(Icons.lock),
-                    suffixIcon: Tooltip(
-                      message: 'Password must be at least 6 characters',
-                      child: Icon(Icons.info_outline),
-                    ),
                   ),
                   obscureText: true,
                   onChanged: _checkPasswordStrength,
@@ -171,7 +212,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               SizedBox(height: 20),
 
-              // Sign Up Button with Gradient
+              // Sign Up Button
               GestureDetector(
                 onTapDown: _onTapDown,
                 onTapUp: _onTapUp,
@@ -186,21 +227,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Account created successfully!')),
-                        );
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginScreen()),
-                        );
-                      }
-                    },
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    onPressed: _isLoading
+                        ? null
+                        : _signUpWithFirebase, // Call Firebase Sign-Up method
+                    child: _isLoading
+                        ? CircularProgressIndicator(color: Colors.white)
+                        : Text('Sign Up', style: TextStyle(fontSize: 18)),
                   ),
                 ),
               ),
@@ -227,46 +259,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Text('Already have an account? Login'),
                   ),
                 ],
-              ),
-
-              SizedBox(height: 20),
-
-              // Social Media Sign-Up Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.facebook, color: Colors.blue, size: 30),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Facebook sign-up not implemented')),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.g_mobiledata, color: Colors.red, size: 30),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Google sign-up not implemented')),
-                      );
-                    },
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 10),
-
-              // Clear All Button
-              TextButton(
-                onPressed: () {
-                  _emailController.clear();
-                  _passwordController.clear();
-                  _confirmPasswordController.clear();
-                  setState(() {
-                    _passwordStrength = "";
-                  });
-                },
-                child: Text('Clear All'),
               ),
             ],
           ),

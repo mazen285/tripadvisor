@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:tripadvisor/signup.dart';
+import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
+import 'firebase_options.dart'; // Import Firebase options
+import 'signup.dart';
 import 'login.dart';
 import 'dashboard_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure Firebase is initialized
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // Use platform-specific Firebase options
+  );
   runApp(MyApp());
 }
 

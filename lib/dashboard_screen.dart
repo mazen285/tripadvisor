@@ -22,7 +22,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     'Paris, France', 'Tokyo, Japan', 'New York, USA', 'London, UK',
     'Sydney, Australia', 'Rome, Italy', 'Barcelona, Spain', 'Cape Town, South Africa',
     'Dubai, UAE', 'Rio de Janeiro, Brazil', 'Bangkok, Thailand', 'Amsterdam, Netherlands',
-    'Seoul, South Korea', 'Dubai, UAE', 'Buenos Aires, Argentina', 'Cairo, Egypt',
+    'Seoul, South Korea',  'Buenos Aires, Argentina', 'Cairo, Egypt',
     'Istanbul, Turkey', 'Athens, Greece', 'San Francisco, USA', 'Moscow, Russia'
   ];
 

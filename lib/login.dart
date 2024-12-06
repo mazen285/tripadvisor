@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tripadvisor/signup.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication
 import 'dashboard_screen.dart';
 import 'forgotpassword.dart'; // Import ForgotPasswordScreen
+import 'signup.dart'; // Import SignUpScreen
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -30,40 +31,57 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _login() {
+  // Firebase Login Function
+  Future<void> _loginWithFirebase() async {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
-        isLoading = true;
+        isLoading = true; // Show loading indicator
       });
 
-      email = _emailController.text;
-      password = _passwordController.text;
+      try {
+        // Attempt to sign in with Firebase
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
 
-      // Simulate network request (replace with actual login logic)
-      Future.delayed(Duration(seconds: 2), () {
-        setState(() {
-          isLoading = false;
-        });
-
-        // Navigate to the Dashboard screen with email passed as username
-        if (email != null) {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  DashboardScreen(username: email!, reservationDetails: {}), // Passing empty reservationDetails for now
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0);
-                const end = Offset.zero;
-                const curve = Curves.easeInOut;
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
-                return SlideTransition(position: offsetAnimation, child: child);
-              },
+        // Navigate to DashboardScreen on successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardScreen(
+              username: _emailController.text.trim(),
+              reservationDetails: {}, // Passing empty reservationDetails for now
             ),
-          );
+          ),
+        );
+      } on FirebaseAuthException catch (e) {
+        // Handle Firebase-specific login errors
+        String errorMessage;
+
+        switch (e.code) {
+          case 'user-not-found':
+            errorMessage = 'No user found with this email.';
+            break;
+          case 'wrong-password':
+            errorMessage = 'Incorrect password. Please try again.';
+            break;
+          case 'invalid-email':
+            errorMessage = 'The email address is invalid.';
+            break;
+          default:
+            errorMessage = 'An unknown error occurred. Please try again.';
         }
-      });
+
+        // Show the error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      } finally {
+        setState(() {
+          isLoading = false; // Hide loading indicator
+        });
+      }
     }
   }
 
@@ -78,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Email Field with better styling and validation
+              // Email Field
               AnimatedContainer(
                 duration: Duration(milliseconds: 300),
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -107,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 20),
 
-              // Password Field with enhanced styling and validation
+              // Password Field
               AnimatedContainer(
                 duration: Duration(milliseconds: 300),
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -136,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 20),
 
-              // Login Button with animation and loading indicator
+              // Login Button
               GestureDetector(
                 onTapDown: _onTapDown,
                 onTapUp: _onTapUp,
@@ -145,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   duration: Duration(milliseconds: 100),
                   curve: Curves.easeInOut,
                   child: ElevatedButton(
-                    onPressed: isLoading ? null : _login, // Disable button during loading
+                    onPressed: isLoading ? null : _loginWithFirebase, // Call Firebase login method
                     child: isLoading
                         ? CircularProgressIndicator(color: Colors.white)
                         : Text('Login'),
@@ -159,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 10),
 
-              // Forgot Password Button (Linked to ForgotPasswordScreen)
+              // Forgot Password Button
               TextButton(
                 onPressed: () {
                   Navigator.push(
@@ -168,15 +186,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                 },
                 child: Text('Forgot Password?'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(vertical: 12.0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                ),
               ),
               SizedBox(height: 20),
 
-              // Sign Up Button with same style as Forgot Password Button
+              // Sign Up Button
               TextButton(
                 onPressed: () {
                   Navigator.push(
@@ -185,11 +198,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                 },
                 child: Text('Don\'t have an account? Sign Up'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(vertical: 12.0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                ),
               ),
             ],
           ),
