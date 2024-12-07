@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication
+import 'package:google_sign_in/google_sign_in.dart'; // Google Sign-In
 import 'forgotpassword.dart';
 import 'login.dart';
 
@@ -88,6 +89,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _isLoading = false; // Hide loading indicator
         });
       }
+    }
+  }
+
+  // Sign-Up with Google
+  Future<void> _signUpWithGoogle() async {
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
+
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        // The user canceled the sign-in
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in with Google credential
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // Success Message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Signed up successfully with Google!')),
+      );
+
+      // Navigate to Login Screen or Home
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: ${e.message}')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false; // Hide loading indicator
+      });
     }
   }
 
@@ -238,7 +287,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               SizedBox(height: 20),
 
+              // Google Sign-Up Button
+              ElevatedButton.icon(
+                icon: Icon(Icons.account_circle, color: Colors.white), // Google Icon
+                label: Text('Sign Up with Google'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                onPressed: _isLoading
+                    ? null
+                    : _signUpWithGoogle, // Call Google Sign-Up method
+              ),
+
               // Forgot Password and Login Links
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -246,7 +312,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => ForgotPasswordScreen()),
                       );
                     },
                     child: Text('Forgot Password?'),
