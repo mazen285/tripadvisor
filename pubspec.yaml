@@ -39,6 +39,8 @@ dependencies:
   firebase_auth: ^5.3.4
   google_sign_in: ^5.4.0
   cloud_firestore: ^5.6.0 # Or the latest version
+  google_maps_webservice: ^0.0.20-nullsafety.5
+
 
 
 
