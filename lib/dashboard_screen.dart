@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // For logout
-import 'ProfileScreen.dart'; // Ensure this import is correct
-import 'CategorySelection.dart'; // Ensure this import is correct
-import 'login.dart'; // Ensure this import is correct
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'ProfileScreen.dart';
+import 'CategorySelection.dart';
+import 'login.dart';
 
 class DashboardScreen extends StatefulWidget {
-  final String username; // Accepting username parameter
-  final Map<String, String> reservationDetails; // Accepting reservation details
+  final String username;
+  final Map<String, String> reservationDetails;
 
   const DashboardScreen({
     Key? key,
@@ -20,41 +21,42 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   String? selectedDestination;
-  final List<String> destinations = [
-    'Paris, France',
-    'Tokyo, Japan',
-    'New York, USA',
-    'London, UK',
-    'Sydney, Australia',
-    'Rome, Italy',
-    'Barcelona, Spain',
-    'Cape Town, South Africa',
-    'Dubai, UAE',
-    'Rio de Janeiro, Brazil',
-    'Bangkok, Thailand',
-    'Amsterdam, Netherlands',
-    'Seoul, South Korea',
-    'Buenos Aires, Argentina',
-    'Cairo, Egypt',
-    'Istanbul, Turkey',
-    'Athens, Greece',
-    'San Francisco, USA',
-    'Moscow, Russia',
-  ];
+  List<String> destinations = [];
+  bool isLoading = true;
 
-  double _scale = 1.0;
-
-  // Method to scale button on press for feedback
-  void _onTapDown(TapDownDetails details) {
-    setState(() {
-      _scale = 0.95;
-    });
+  @override
+  void initState() {
+    super.initState();
+    fetchDestinations();
   }
 
-  void _onTapUp(TapUpDetails details) {
-    setState(() {
-      _scale = 1.0;
-    });
+  Future<void> fetchDestinations() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('destination').get();
+      if (snapshot.docs.isNotEmpty) {
+        final fetchedDestinations = snapshot.docs.map((doc) => doc['name'] as String).toList();
+        setState(() {
+          destinations = fetchedDestinations;
+          isLoading = false; // Stop loading spinner
+        });
+      } else {
+        setState(() {
+          destinations = [];
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No destinations found in the database!')),
+        );
+      }
+    } catch (e) {
+      print("Error fetching destinations: $e");
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching destinations. Please try again later.')),
+      );
+    }
   }
 
   @override
@@ -98,7 +100,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome Message
             Text(
               'Welcome, ${widget.username}!',
               style: TextStyle(
@@ -108,30 +109,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
             SizedBox(height: 20),
-
-            // Destination Dropdown
-            _buildDestinationDropdown(),
+            isLoading
+                ? Center(child: CircularProgressIndicator())
+                : destinations.isEmpty
+                ? Center(child: Text('No destinations available.', style: TextStyle(color: Colors.white)))
+                : _buildDestinationDropdown(),
             SizedBox(height: 20),
-
-            // Confirm Destination Button
             _buildConfirmButton(),
-
             SizedBox(height: 20),
-
-            // Reservation Details
             Text(
               'Reservation Details:',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-
-            // Reservation List
             _buildReservationList(destination, placeName, date, time, people),
           ],
         ),
       ),
-
-      // Logout Button
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           try {
@@ -194,31 +188,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildConfirmButton() {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      child: AnimatedScale(
-        scale: _scale,
-        duration: Duration(milliseconds: 100),
-        curve: Curves.easeInOut,
-        child: ElevatedButton(
-          onPressed: () {
-            if (selectedDestination == null || selectedDestination!.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Please select a destination!')),
-              );
-              return;
-            }
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CategorySelectionScreen(destination: selectedDestination!),
-              ),
-            );
-          },
-          child: Text('Confirm Destination'),
-        ),
-      ),
+    return ElevatedButton(
+      onPressed: () {
+        if (selectedDestination == null || selectedDestination!.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Please select a destination!')),
+          );
+          return;
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CategorySelectionScreen(destination: selectedDestination!),
+          ),
+        );
+      },
+      child: Text('Confirm Destination'),
     );
   }
 
